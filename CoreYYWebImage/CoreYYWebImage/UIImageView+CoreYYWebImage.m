@@ -16,7 +16,7 @@
     
     NSURL *urlObj = [NSURL URLWithString:url];
     
-    [self yy_setImageWithURL:urlObj placeholder:image options:YYWebImageOptionProgressiveBlur completion:nil];
+    [self yy_setImageWithURL:urlObj placeholder:image options:YYWebImageOptionProgressiveBlur | YYWebImageOptionSetImageWithFadeAnimation | YYWebImageOptionProgressive | YYWebImageOptionAllowBackgroundTask  completion:nil];
 }
 
 @end

@@ -34,7 +34,7 @@
 		8901BCA01C1123EB004F7E81 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8901BC9F1C1123EB004F7E81 /* libsqlite3.tbd */; };
 		8901BCAA1C11243B004F7E81 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8901BCA91C11243B004F7E81 /* libz.tbd */; };
 		8901BCAD1C112A60004F7E81 /* UIImageView+CoreYYWebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8901BCAC1C112A60004F7E81 /* UIImageView+CoreYYWebImage.m */; };
-		8901BCB21C112B7D004F7E81 /* CoreYYWebImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8901BCB11C112B7D004F7E81 /* CoreYYWebImage.bundle */; };
+		8992A67C1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8992A67B1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -89,7 +89,8 @@
 		8901BCA91C11243B004F7E81 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8901BCAB1C112A60004F7E81 /* UIImageView+CoreYYWebImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+CoreYYWebImage.h"; sourceTree = "<group>"; };
 		8901BCAC1C112A60004F7E81 /* UIImageView+CoreYYWebImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+CoreYYWebImage.m"; sourceTree = "<group>"; };
-		8901BCB11C112B7D004F7E81 /* CoreYYWebImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CoreYYWebImage.bundle; sourceTree = "<group>"; };
+		8992A67A1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+CoreYYWebImage.h"; sourceTree = "<group>"; };
+		8992A67B1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+CoreYYWebImage.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,7 +155,8 @@
 				8901BC641C1123D1004F7E81 /* YYWebImage */,
 				8901BCAB1C112A60004F7E81 /* UIImageView+CoreYYWebImage.h */,
 				8901BCAC1C112A60004F7E81 /* UIImageView+CoreYYWebImage.m */,
-				8901BCB11C112B7D004F7E81 /* CoreYYWebImage.bundle */,
+				8992A67A1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.h */,
+				8992A67B1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.m */,
 			);
 			path = CoreYYWebImage;
 			sourceTree = "<group>";
@@ -285,7 +287,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8901BC5C1C1123B7004F7E81 /* LaunchScreen.storyboard in Resources */,
-				8901BCB21C112B7D004F7E81 /* CoreYYWebImage.bundle in Resources */,
 				8901BC591C1123B7004F7E81 /* Assets.xcassets in Resources */,
 				8901BC571C1123B7004F7E81 /* Main.storyboard in Resources */,
 			);
@@ -305,6 +306,7 @@
 				8901BC8E1C1123D1004F7E81 /* YYDiskCache.m in Sources */,
 				8901BC9A1C1123D1004F7E81 /* YYImageCoder.m in Sources */,
 				8901BC9C1C1123D1004F7E81 /* YYImageCache.m in Sources */,
+				8992A67C1C22B1E6005C4FE6 /* UIButton+CoreYYWebImage.m in Sources */,
 				8901BC8D1C1123D1004F7E81 /* YYCache.m in Sources */,
 				8901BC9D1C1123D1004F7E81 /* YYWebImageManager.m in Sources */,
 				8901BC981C1123D1004F7E81 /* YYFrameImage.m in Sources */,
@@ -466,6 +468,7 @@
 				8901BC621C1123B7004F7E81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
