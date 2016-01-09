@@ -13,4 +13,9 @@
 -(void)imageWithUrl:(NSString *)url placeHolderImage:(UIImage *)image;
 
 
+-(void)imageWithUrl:(NSString *)url placeHolderImage:(UIImage *)image compeleteBlock:(void(^)(UIImage *image))compeleteBlock;
+
+
+
+
 @end

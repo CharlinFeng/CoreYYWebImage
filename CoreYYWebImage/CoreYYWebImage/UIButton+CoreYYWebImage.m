@@ -19,4 +19,15 @@
     
 }
 
+
+-(void)imageWithUrl:(NSString *)url placeHolderImage:(UIImage *)image state:(UIControlState)state compeleteBlock:(void(^)(UIImage *image))compeleteBlock{
+    
+    NSURL *urlObj = [NSURL URLWithString:url];
+
+    [self yy_setImageWithURL:urlObj forState:state placeholder:image options:YYWebImageOptionProgressiveBlur | YYWebImageOptionSetImageWithFadeAnimation | YYWebImageOptionProgressive | YYWebImageOptionAllowBackgroundTask completion:^(UIImage *image, NSURL *url, YYWebImageFromType from, YYWebImageStage stage, NSError *error) {
+        
+        if(compeleteBlock != nil) compeleteBlock(image);
+    }];
+}
+
 @end

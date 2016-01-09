@@ -7,11 +7,14 @@
 //
 
 #import "ViewController.h"
-#import "YYWebImage.h"
+#import "UIImageView+CoreYYWebImage.h"
 
 @interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageV;
+
+@property (weak, nonatomic) IBOutlet UIImageView *imageV2;
+
 
 
 @end
@@ -20,6 +23,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSString *url = @"http://img.netbian.com/file/20131220/cd39faa3b64d51fb8c63838e2bc9ce01.jpg";
+    
+    [self.imageV imageWithUrl:url placeHolderImage:nil compeleteBlock:^(UIImage *image) {
+        
+        
+        NSLog(@"完成");
+        
+        self.imageV2.image = image;
+        
+    }];
+    
 }
 
 

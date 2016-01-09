@@ -12,4 +12,8 @@
 
 -(void)imageWithUrl:(NSString *)url placeHolderImage:(UIImage *)image state:(UIControlState)state;
 
+-(void)imageWithUrl:(NSString *)url placeHolderImage:(UIImage *)image state:(UIControlState)state compeleteBlock:(void(^)(UIImage *image))compeleteBlock;
+
+
+
 @end
