@@ -27,6 +27,22 @@
 #define MIN_PROGRESSIVE_TIME_INTERVAL 0.2
 #define MIN_PROGRESSIVE_BLUR_TIME_INTERVAL 0.4
 
+
+/// Returns nil in App Extension.
+static UIApplication *_YYSharedApplication() {
+    static BOOL isAppExtension = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class cls = NSClassFromString(@"UIApplication");
+        if(!cls || ![cls respondsToSelector:@selector(sharedApplication)]) isAppExtension = YES;
+        if ([[[NSBundle mainBundle] bundlePath] hasSuffix:@".appex"]) isAppExtension = YES;
+    });
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    return isAppExtension ? nil : [UIApplication performSelector:@selector(sharedApplication)];
+#pragma clang diagnostic pop
+}
+
 /// Returns YES if the right-bottom pixel is filled.
 static BOOL YYCGImageLastPixelFilled(CGImageRef image) {
     if (!image) return NO;
@@ -56,31 +72,31 @@ static NSData *JPEGSOSMarker() {
 
 
 static NSMutableSet *URLBlacklist;
-static OSSpinLock URLBlacklistLock;
+static dispatch_semaphore_t URLBlacklistLock;
 
 static void URLBlacklistInit() {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         URLBlacklist = [NSMutableSet new];
-        URLBlacklistLock = OS_SPINLOCK_INIT;
+        URLBlacklistLock = dispatch_semaphore_create(1);
     });
 }
 
 static BOOL URLBlackListContains(NSURL *url) {
     if (!url || url == (id)[NSNull null]) return NO;
     URLBlacklistInit();
-    OSSpinLockLock(&URLBlacklistLock);
+    dispatch_semaphore_wait(URLBlacklistLock, DISPATCH_TIME_FOREVER);
     BOOL contains = [URLBlacklist containsObject:url];
-    OSSpinLockUnlock(&URLBlacklistLock);
+    dispatch_semaphore_signal(URLBlacklistLock);
     return contains;
 }
 
 static void URLInBlackListAdd(NSURL *url) {
     if (!url || url == (id)[NSNull null]) return;
     URLBlacklistInit();
-    OSSpinLockLock(&URLBlacklistLock);
+    dispatch_semaphore_wait(URLBlacklistLock, DISPATCH_TIME_FOREVER);
     [URLBlacklist addObject:url];
-    OSSpinLockUnlock(&URLBlacklistLock);
+    dispatch_semaphore_signal(URLBlacklistLock);
 }
 
 
@@ -263,7 +279,7 @@ static void URLInBlackListAdd(NSURL *url) {
 - (void)dealloc {
     [_lock lock];
     if (_taskID != UIBackgroundTaskInvalid) {
-        [[UIApplication sharedApplication] endBackgroundTask:_taskID];
+        [_YYSharedApplication() endBackgroundTask:_taskID];
         _taskID = UIBackgroundTaskInvalid;
     }
     if ([self isExecuting]) {
@@ -287,7 +303,7 @@ static void URLInBlackListAdd(NSURL *url) {
 - (void)_endBackgroundTask {
     [_lock lock];
     if (_taskID != UIBackgroundTaskInvalid) {
-        [[UIApplication sharedApplication] endBackgroundTask:_taskID];
+        [_YYSharedApplication() endBackgroundTask:_taskID];
         _taskID = UIBackgroundTaskInvalid;
     }
     [_lock unlock];
@@ -313,7 +329,7 @@ static void URLInBlackListAdd(NSURL *url) {
             if (image) {
                 [_lock lock];
                 if (![self isCancelled]) {
-                    if (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageCancelled, nil);
+                    if (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);
                 }
                 [self _finish];
                 [_lock unlock];
@@ -744,10 +760,10 @@ static void URLInBlackListAdd(NSURL *url) {
             } else {
                 self.executing = YES;
                 [self performSelector:@selector(_startOperation) onThread:[[self class] _networkThread] withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
-                if (_options & YYWebImageOptionAllowBackgroundTask) {
+                if ((_options & YYWebImageOptionAllowBackgroundTask) && _YYSharedApplication()) {
                     __weak __typeof__ (self) _self = self;
                     if (_taskID == UIBackgroundTaskInvalid) {
-                        _taskID = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                        _taskID = [_YYSharedApplication() beginBackgroundTaskWithExpirationHandler:^{
                             __strong __typeof (_self) self = _self;
                             if (self) {
                                 [self cancel];

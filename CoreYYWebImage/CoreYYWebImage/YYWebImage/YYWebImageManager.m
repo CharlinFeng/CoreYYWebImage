@@ -15,11 +15,29 @@
 #import <objc/runtime.h>
 
 #define kNetworkIndicatorDelay (1/30.0)
-@interface _YYUIApplicationNetworkIndicatorInfo : NSObject
+
+
+/// Returns nil in App Extension.
+static UIApplication *_YYSharedApplication() {
+    static BOOL isAppExtension = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class cls = NSClassFromString(@"UIApplication");
+        if(!cls || ![cls respondsToSelector:@selector(sharedApplication)]) isAppExtension = YES;
+        if ([[[NSBundle mainBundle] bundlePath] hasSuffix:@".appex"]) isAppExtension = YES;
+    });
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    return isAppExtension ? nil : [UIApplication performSelector:@selector(sharedApplication)];
+#pragma clang diagnostic pop
+}
+
+
+@interface _YYWebImageApplicationNetworkIndicatorInfo : NSObject
 @property (nonatomic, assign) NSInteger count;
 @property (nonatomic, strong) NSTimer *timer;
 @end
-@implementation _YYUIApplicationNetworkIndicatorInfo
+@implementation _YYWebImageApplicationNetworkIndicatorInfo
 @end
 
 @implementation YYWebImageManager
@@ -103,27 +121,32 @@
 
 #pragma mark Network Indicator
 
-+ (_YYUIApplicationNetworkIndicatorInfo *)_networkIndicatorInfo {
++ (_YYWebImageApplicationNetworkIndicatorInfo *)_networkIndicatorInfo {
     return objc_getAssociatedObject(self, @selector(_networkIndicatorInfo));
 }
 
-+ (void)_setNetworkIndicatorInfo:(_YYUIApplicationNetworkIndicatorInfo *)info {
++ (void)_setNetworkIndicatorInfo:(_YYWebImageApplicationNetworkIndicatorInfo *)info {
     objc_setAssociatedObject(self, @selector(_networkIndicatorInfo), info, OBJC_ASSOCIATION_RETAIN);
 }
 
 + (void)_delaySetActivity:(NSTimer *)timer {
+    UIApplication *app = _YYSharedApplication();
+    if (!app) return;
+    
     NSNumber *visiable = timer.userInfo;
-    if ([UIApplication sharedApplication].networkActivityIndicatorVisible != visiable.boolValue) {
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:visiable.boolValue];
+    if (app.networkActivityIndicatorVisible != visiable.boolValue) {
+        [app setNetworkActivityIndicatorVisible:visiable.boolValue];
     }
     [timer invalidate];
 }
 
 + (void)_changeNetworkActivityCount:(NSInteger)delta {
+    if (!_YYSharedApplication()) return;
+    
     void (^block)() = ^{
-        _YYUIApplicationNetworkIndicatorInfo *info = [self _networkIndicatorInfo];
+        _YYWebImageApplicationNetworkIndicatorInfo *info = [self _networkIndicatorInfo];
         if (!info) {
-            info = [_YYUIApplicationNetworkIndicatorInfo new];
+            info = [_YYWebImageApplicationNetworkIndicatorInfo new];
             [self _setNetworkIndicatorInfo:info];
         }
         NSInteger count = info.count;
@@ -149,7 +172,7 @@
 }
 
 + (NSInteger)currentNetworkActivityCount {
-    _YYUIApplicationNetworkIndicatorInfo *info = [self _networkIndicatorInfo];
+    _YYWebImageApplicationNetworkIndicatorInfo *info = [self _networkIndicatorInfo];
     return info.count;
 }
 
